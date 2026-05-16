@@ -561,7 +561,29 @@ function detectLanguageFromText() {
 }
 
 // ── Detect language from AUDIO using Whisper on server ────────────────────────
+let detectRecognition = null;
+let detectRunning = false;
+
 async function detectFromAudio() {
+
+  // ==========================================
+  // STOP OLD INSTANCE FIRST
+  // ==========================================
+
+  if (detectRecognition) {
+
+    try {
+
+      detectRecognition.stop();
+
+    } catch(e) {}
+
+    detectRecognition = null;
+  }
+
+  // ==========================================
+  // CHECK SUPPORT
+  // ==========================================
 
   const hasSR =
     ('SpeechRecognition' in window) ||
@@ -570,37 +592,44 @@ async function detectFromAudio() {
   if (!hasSR) {
 
     document.getElementById('detectAudioResult')
-      .textContent = 'Speech recognition not supported';
+      .textContent =
+        'Speech recognition not supported';
 
     return;
   }
+
+  // ==========================================
+  // CREATE NEW INSTANCE
+  // ==========================================
 
   const SR =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
-  const recognitionDetect = new SR();
+  detectRecognition = new SR();
 
-  recognitionDetect.continuous = false;
-  recognitionDetect.interimResults = false;
+  detectRecognition.continuous = false;
+  detectRecognition.interimResults = false;
+  detectRecognition.maxAlternatives = 1;
 
-  recognitionDetect.lang = 'hi-IN';
+  detectRecognition.lang = 'en-US';
+
+  detectRunning = true;
 
   document.getElementById('detectAudioResult')
-    .textContent = 'Listening...';
+    .textContent =
+      '🎤 Listening...';
 
-  recognitionDetect.start();
+  // ==========================================
+  // RESULT
+  // ==========================================
 
-  recognitionDetect.onresult = function (event) {
+  detectRecognition.onresult = function(event) {
 
     const text =
       event.results[0][0].transcript;
 
-    console.log('Detected speech:', text);
-
-    // ==========================================
-    // SCRIPT DETECTION
-    // ==========================================
+    console.log('Detected:', text);
 
     const scripts = [
 
@@ -689,7 +718,7 @@ async function detectFromAudio() {
 
       document.getElementById('detectAudioResult')
         .textContent =
-          '✓ ' + found.label;
+          '✓ ' + found.label + ' detected';
 
     } else {
 
@@ -699,129 +728,48 @@ async function detectFromAudio() {
     }
   };
 
-  recognitionDetect.onerror = function () {
+  // ==========================================
+  // ERROR
+  // ==========================================
+
+  detectRecognition.onerror = function(event) {
+
+    console.log(event);
 
     document.getElementById('detectAudioResult')
       .textContent =
         'Detection failed';
-  };
-}
 
-
-
-// ── Main recording: click-to-start / click-to-stop, NO time limit ─────────────
-function toggleRecord() {
-  if (isRecording) { stopRecord(); return; }
-  startRecord();
-}
-
-async function startRecord() {
-
-  isRecording = true;
-  recSeconds = 0;
-
-  document.getElementById('micBtn')
-    .classList.add('recording');
-
-  document.getElementById('micIcon')
-    .textContent = '⏹️';
-
-  document.getElementById('recLabel')
-    .textContent = 'Recording... click mic to stop';
-
-  document.getElementById('recTimer')
-    .style.display = 'block';
-
-  document.getElementById('waveform')
-    .classList.add('active');
-
-  setStatus('● Recording', 's-recording');
-
-  // ==========================================
-  // TIMER
-  // ==========================================
-
-  recInterval = setInterval(function () {
-
-    recSeconds++;
-
-    const m = Math.floor(recSeconds / 60);
-    const s = recSeconds % 60;
-
-    document.getElementById('recTimer').textContent =
-      m + ':' + (s < 10 ? '0' : '') + s;
-
-  }, 1000);
-
-  // ==========================================
-  // BROWSER SPEECH RECOGNITION
-  // ==========================================
-
-  const hasSR =
-    ('SpeechRecognition' in window) ||
-    ('webkitSpeechRecognition' in window);
-
-  if (!hasSR) {
-
-    setStatus(
-      'Speech recognition not supported',
-      's-error'
-    );
-
-    stopRecord();
-    return;
-  }
-
-  const SR =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  recognition = new SR();
-
-  const code =
-    LANG_CODES[
-      document.getElementById('srcLang').value
-    ] || 'en';
-
-  recognition.lang =
-    SR_LOCALES[code] || 'en-IN';
-
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  recognition.onresult = function (e) {
-
-    let t = '';
-
-    for (let i = 0; i < e.results.length; i++) {
-
-      t += e.results[i][0].transcript;
-    }
-
-    document.getElementById('inputText').value = t;
+    detectRunning = false;
   };
 
-  recognition.onerror = function (e) {
+  // ==========================================
+  // CLEANUP
+  // ==========================================
+
+  detectRecognition.onend = function() {
+
+    detectRunning = false;
+
+    detectRecognition = null;
+  };
+
+  // ==========================================
+  // START
+  // ==========================================
+
+  try {
+
+    detectRecognition.start();
+
+  } catch(e) {
 
     console.log(e);
 
-    setStatus(
-      'Mic error: ' + e.error,
-      's-error'
-    );
-
-    stopRecord();
-  };
-
-  recognition.onend = function () {
-
-    if (isRecording) {
-
-      recognition.start();
-    }
-  };
-
-  recognition.start();
+    document.getElementById('detectAudioResult')
+      .textContent =
+        'Mic busy — try again';
+  }
 }
 
 function stopRecord() {
