@@ -562,66 +562,152 @@ function detectLanguageFromText() {
 
 // ── Detect language from AUDIO using Whisper on server ────────────────────────
 async function detectFromAudio() {
-  if (!detectRecording) {
-    // START
-    try {
-      detectAudioChunks = []; detectSeconds = 0;
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      detectMediaRecorder = new MediaRecorder(stream);
-      detectMediaRecorder.ondataavailable = e => { if (e.data.size > 0) detectAudioChunks.push(e.data); };
-      detectMediaRecorder.onstop = sendDetectAudio;
-      detectMediaRecorder.start();
-      detectRecording = true;
 
-      document.getElementById('detectAudioBtn').classList.add('detecting');
-      document.getElementById('detectAudioIcon').textContent = '⏹️';
-      document.getElementById('detectAudioText').textContent = 'Recording... click again to detect';
-      document.getElementById('detectAudioResult').textContent = '';
+  const hasSR =
+    ('SpeechRecognition' in window) ||
+    ('webkitSpeechRecognition' in window);
 
-      detectInterval = setInterval(function() {
-        detectSeconds++;
-        document.getElementById('detectAudioText').textContent =
-          'Recording (' + detectSeconds + 's)... click again to detect';
-      }, 1000);
-    } catch(e) {
-      document.getElementById('detectAudioResult').textContent = 'Mic error';
-    }
-  } else {
-    // STOP
-    detectRecording = false;
-    clearInterval(detectInterval);
-    if (detectMediaRecorder && detectMediaRecorder.state !== 'inactive') {
-      detectMediaRecorder.stop();
-      detectMediaRecorder.stream.getTracks().forEach(t => t.stop());
-    }
-    document.getElementById('detectAudioBtn').classList.remove('detecting');
-    document.getElementById('detectAudioIcon').textContent = '🔊';
-    document.getElementById('detectAudioText').textContent = 'Detect language from voice — click to record, click again to detect';
-    document.getElementById('detectAudioResult').textContent = 'Detecting...';
+  if (!hasSR) {
+
+    document.getElementById('detectAudioResult')
+      .textContent = 'Speech recognition not supported';
+
+    return;
   }
-}
 
-async function sendDetectAudio() {
-  const blob = new Blob(detectAudioChunks, { type: 'audio/webm' });
-  const fd = new FormData();
-  fd.append('audio', blob, 'detect.webm');
-  fd.append('detect_lang', 'true');
-  try {
-    const res  = await fetch('/stt', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (data.detected_lang) {
-      const name = data.detected_lang.charAt(0).toUpperCase() + data.detected_lang.slice(1);
-      document.getElementById('detectAudioResult').textContent = '✓ ' + name + ' (' + data.confidence + '%)';
-      // Auto-set source language dropdown
-      const opt = document.getElementById('srcLang').querySelector('option[value="' + data.detected_lang + '"]');
-      if (opt) document.getElementById('srcLang').value = data.detected_lang;
+  const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  const recognitionDetect = new SR();
+
+  recognitionDetect.continuous = false;
+  recognitionDetect.interimResults = false;
+
+  recognitionDetect.lang = 'hi-IN';
+
+  document.getElementById('detectAudioResult')
+    .textContent = 'Listening...';
+
+  recognitionDetect.start();
+
+  recognitionDetect.onresult = function (event) {
+
+    const text =
+      event.results[0][0].transcript;
+
+    console.log('Detected speech:', text);
+
+    // ==========================================
+    // SCRIPT DETECTION
+    // ==========================================
+
+    const scripts = [
+
+      {
+        re: /[\u0980-\u09FF]/,
+        lang: 'bengali',
+        label: 'Bengali'
+      },
+
+      {
+        re: /[\u0C00-\u0C7F]/,
+        lang: 'telugu',
+        label: 'Telugu'
+      },
+
+      {
+        re: /[\u0B80-\u0BFF]/,
+        lang: 'tamil',
+        label: 'Tamil'
+      },
+
+      {
+        re: /[\u0C80-\u0CFF]/,
+        lang: 'kannada',
+        label: 'Kannada'
+      },
+
+      {
+        re: /[\u0D00-\u0D7F]/,
+        lang: 'malayalam',
+        label: 'Malayalam'
+      },
+
+      {
+        re: /[\u0A80-\u0AFF]/,
+        lang: 'gujarati',
+        label: 'Gujarati'
+      },
+
+      {
+        re: /[\u0B00-\u0B7F]/,
+        lang: 'odia',
+        label: 'Odia'
+      },
+
+      {
+        re: /[\u0A00-\u0A7F]/,
+        lang: 'punjabi',
+        label: 'Punjabi'
+      },
+
+      {
+        re: /[\u0900-\u097F]/,
+        lang: 'hindi',
+        label: 'Hindi'
+      },
+
+      {
+        re: /[\u0600-\u06FF]/,
+        lang: 'urdu',
+        label: 'Urdu'
+      },
+
+      {
+        re: /[a-zA-Z]/,
+        lang: 'english',
+        label: 'English'
+      }
+    ];
+
+    let found = null;
+
+    for (const s of scripts) {
+
+      if (s.re.test(text)) {
+
+        found = s;
+        break;
+      }
+    }
+
+    if (found) {
+
+      document.getElementById('srcLang').value =
+        found.lang;
+
+      document.getElementById('detectAudioResult')
+        .textContent =
+          '✓ ' + found.label;
+
     } else {
-      document.getElementById('detectAudioResult').textContent = 'Could not detect';
+
+      document.getElementById('detectAudioResult')
+        .textContent =
+          'Could not detect';
     }
-  } catch(e) {
-    document.getElementById('detectAudioResult').textContent = 'Detection failed';
-  }
+  };
+
+  recognitionDetect.onerror = function () {
+
+    document.getElementById('detectAudioResult')
+      .textContent =
+        'Detection failed';
+  };
 }
+
+
 
 // ── Main recording: click-to-start / click-to-stop, NO time limit ─────────────
 function toggleRecord() {
