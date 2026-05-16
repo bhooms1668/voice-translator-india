@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -699,4 +700,707 @@ document.getElementById('micBtn').addEventListener('keydown', function(e) {
 });
 </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SunoBhashini - Suno Bhashini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --saffron:    #B5451B;
+    --saffron-lt: #E07B39;
+    --gold:       #C9943A;
+    --cream:      #FFF8F0;
+    --cream-lt:   #FFF3E0;
+    --border:     #F0D5B8;
+    --border-md:  #F0C090;
+    --text:       #2C1A0E;
+    --text-md:    #5C3A1E;
+    --text-lt:    #8B5E3C;
+    --text-dim:   #C4997A;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Poppins', sans-serif; background: var(--cream); min-height: 100vh; color: var(--text); }
+
+  .header {
+    background: linear-gradient(135deg, var(--saffron) 0%, var(--saffron-lt) 50%, var(--gold) 100%);
+    position: relative; overflow: hidden;
+  }
+  .header-pattern {
+    position: absolute; inset: 0; opacity: 0.10;
+    background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%);
+    background-size: 14px 14px;
+  }
+  .header-inner {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px; flex-wrap: wrap; gap: 12px;
+  }
+  .logo-block { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 52px; height: 52px; background: #FFF3E0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+  }
+  .logo-text h1 { font-size: 22px; font-weight: 600; color: #FFF8F0; letter-spacing: 0.5px; }
+  .logo-text p  { font-size: 12px; color: #FFD9B0; margin-top: 2px; }
+  .lang-badge {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    color: #FFF8F0; font-size: 12px; padding: 6px 16px; border-radius: 20px;
+  }
+
+  .script-strip {
+    background: var(--saffron-lt); padding: 8px 32px;
+    display: flex; gap: 20px; flex-wrap: wrap; border-bottom: 3px solid var(--saffron);
+  }
+  .script-tag { font-size: 13px; color: #FFF3E0; opacity: 0.88; white-space: nowrap; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .card {
+    background: #fff; border-radius: 16px; border: 1.5px solid var(--border);
+    padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(181,69,27,0.06);
+  }
+  .card-title {
+    font-size: 12px; font-weight: 600; color: var(--saffron);
+    text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--saffron-lt); flex-shrink: 0; }
+
+  .lang-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; }
+  .lang-col label { font-size: 12px; color: var(--text-lt); font-weight: 500; margin-bottom: 6px; display: block; }
+  .lang-select {
+    width: 100%; padding: 10px 36px 10px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--cream); font-family: 'Poppins', sans-serif;
+    font-size: 14px; color: var(--text); cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23B5451B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; transition: border-color 0.2s;
+  }
+  .lang-select:focus { outline: none; border-color: var(--saffron-lt); }
+
+  .swap-btn {
+    width: 42px; height: 42px; border-radius: 50%; background: var(--cream-lt);
+    border: 1.5px solid var(--border); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 24px; font-size: 20px; transition: background 0.2s, transform 0.3s; flex-shrink: 0;
+  }
+  .swap-btn:hover { background: #FFE0C2; transform: rotate(180deg); }
+
+  .detect-strip {
+    background: var(--cream-lt); border: 1.5px dashed var(--border-md);
+    border-radius: 10px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: background 0.2s; margin-top: 12px;
+  }
+  .detect-strip:hover { background: #FFE8C8; }
+  .detect-strip span { font-size: 13px; color: var(--text-lt); }
+  .detect-result { font-size: 13px; font-weight: 500; color: var(--saffron); margin-left: auto; }
+
+  .record-area { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0 4px; }
+  .mic-ring {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: var(--cream-lt); border: 3px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s; user-select: none;
+  }
+  .mic-ring:hover { border-color: var(--saffron-lt); background: #FFE8C8; }
+  .mic-ring.recording { border-color: var(--saffron); background: #FFE0C2; animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(181,69,27,0.25); }
+    50%      { box-shadow: 0 0 0 16px rgba(181,69,27,0); }
+  }
+  .mic-icon { font-size: 36px; pointer-events: none; }
+  .rec-label { font-size: 13px; color: var(--text-lt); }
+  .rec-timer { font-size: 24px; font-weight: 600; color: var(--saffron); font-variant-numeric: tabular-nums; display: none; }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; transition: all 0.3s;
+  }
+  .s-idle       { background: #F0D5B8; color: var(--text-lt); }
+  .s-recording  { background: #FFE0C2; color: var(--saffron); }
+  .s-processing { background: var(--cream-lt); color: var(--saffron-lt); }
+  .s-done       { background: #EAF3DE; color: #3B6D11; }
+  .s-error      { background: #FCEBEB; color: #A32D2D; }
+
+  .dur-row { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 16px; }
+  .dur-row label { font-size: 12px; color: var(--text-lt); white-space: nowrap; }
+  .dur-row input[type=range] { flex: 1; accent-color: var(--saffron-lt); cursor: pointer; }
+  .dur-val { font-size: 13px; font-weight: 500; color: var(--saffron); min-width: 32px; }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-text { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+
+  .transcript-box {
+    width: 100%; background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; min-height: 80px;
+    font-size: 15px; line-height: 1.7; color: var(--text);
+    font-family: 'Poppins', sans-serif; resize: vertical; transition: border-color 0.2s;
+  }
+  .transcript-box:focus { outline: none; border-color: var(--saffron-lt); }
+  .transcript-box::placeholder { color: var(--text-dim); font-style: italic; }
+
+  .translate-btn {
+    width: 100%; padding: 15px;
+    background: linear-gradient(90deg, var(--saffron), var(--saffron-lt));
+    color: #fff; border: none; border-radius: 12px;
+    font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.3px; transition: opacity 0.2s, transform 0.1s;
+    margin-bottom: 20px;
+  }
+  .translate-btn:hover   { opacity: 0.92; }
+  .translate-btn:active  { transform: scale(0.99); }
+  .translate-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .output-box {
+    background: var(--cream-lt); border: 1.5px solid var(--border-md);
+    border-radius: 10px; padding: 16px; min-height: 80px;
+    font-size: 16px; line-height: 1.8; color: var(--text);
+    white-space: pre-wrap; word-break: break-word;
+  }
+
+  .output-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .action-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 8px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-family: 'Poppins', sans-serif; font-size: 13px;
+    color: var(--text-lt); cursor: pointer; transition: all 0.2s;
+  }
+  .action-btn:hover  { background: var(--cream-lt); border-color: var(--saffron-lt); color: var(--saffron); }
+  .action-btn.active { background: var(--cream-lt); border-color: var(--saffron); color: var(--saffron); }
+
+  .speed-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .speed-label { font-size: 12px; color: var(--text-lt); }
+  .speed-btn {
+    padding: 5px 12px; border-radius: 6px; border: 1.5px solid var(--border);
+    background: #fff; font-size: 12px; font-family: 'Poppins', sans-serif;
+    cursor: pointer; color: var(--text-lt); transition: all 0.2s;
+  }
+  .speed-btn.active { background: var(--saffron-lt); border-color: var(--saffron-lt); color: #fff; }
+  .speed-btn:hover:not(.active) { background: var(--cream-lt); }
+
+  .history-item {
+    border-left: 3px solid var(--saffron-lt); padding: 10px 14px;
+    margin-bottom: 10px; background: var(--cream);
+    border-radius: 0 8px 8px 0; transition: background 0.2s;
+  }
+  .history-item:hover { background: var(--cream-lt); }
+  .history-langs { font-size: 11px; color: var(--saffron); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .history-texts { font-size: 13px; color: var(--text-md); line-height: 1.5; }
+  .history-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .history-btn {
+    padding: 4px 12px; font-size: 12px; border-radius: 6px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-family: 'Poppins', sans-serif; color: var(--text-lt); cursor: pointer; transition: all 0.2s;
+  }
+  .history-btn:hover { background: var(--cream-lt); border-color: var(--saffron-lt); color: var(--saffron); }
+  .history-empty { font-size: 13px; color: var(--text-dim); font-style: italic; text-align: center; padding: 20px; }
+
+  .footer { text-align: center; padding: 20px; font-size: 12px; color: var(--text-dim); }
+  .rangoli { font-size: 22px; letter-spacing: 8px; margin-bottom: 8px; }
+
+  @media (max-width: 600px) {
+    .header-inner { padding: 14px 16px; }
+    .script-strip { padding: 8px 16px; }
+    .main { padding: 16px 12px 48px; }
+    .card { padding: 20px 16px; }
+    .lang-grid { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-pattern"></div>
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-icon">&#x1FA94;</div>
+      <div class="logo-text">
+        <h1>SunoBhashini</h1>
+        <p>&#x938;&#x941;&#x928;&#x94B; &#x2014; Hear Every Indian Language</p>
+      </div>
+    </div>
+    <div class="lang-badge">&#x1F1EE;&#x1F1F3; 23 Indian Languages</div>
+  </div>
+</header>
+
+<div class="script-strip">
+  <span class="script-tag">&#x939;&#x93F;&#x928;&#x94D;&#x926;&#x940;</span>
+  <span class="script-tag">&#xBBA4;&#xBDE4;&#xBBF4;&#xBBCD;</span>
+  <span class="script-tag">&#xC24A;&#xC46C;&#xC17D;&#xC41C;</span>
+  <span class="script-tag">&#xC95C;&#xCA8C;&#xCA1C;</span>
+  <span class="script-tag">&#x9AC;&#x9BE;&#x982;&#x9B2;&#x9BE;</span>
+  <span class="script-tag">&#xD2DE;&#xD32;&#xD2F;&#xD3E;&#xD33;&#xD02;</span>
+  <span class="script-tag">&#xA2A;&#xA70;&#xA1C;&#xA3E;&#xA2C;&#xA40;</span>
+  <span class="script-tag">&#x92E;&#x930;&#x93E;&#x920;&#x940;</span>
+  <span class="script-tag">&#xA97;&#xAC1;&#xA9C;&#xAB0;&#xABE;&#xAA4;&#xAC0;</span>
+  <span class="script-tag">&#x627;&#x631;&#x62F;&#x648;</span>
+  <span class="script-tag">&#x938;&#x902;&#x938;&#x94D;&#x915;&#x943;&#x924;</span>
+</div>
+
+<main class="main">
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Choose Languages</div>
+    <div class="lang-grid">
+      <div class="lang-col">
+        <label for="srcLang">Speak in</label>
+        <select class="lang-select" id="srcLang">
+          <option value="english">English</option>
+          <option value="hindi">Hindi - हिन्दी</option>
+          <option value="bengali">Bengali - বাংলা</option>
+          <option value="telugu">Telugu - తెలుగు</option>
+          <option value="marathi">Marathi - मराठी</option>
+          <option value="tamil">Tamil - தமிழ்</option>
+          <option value="gujarati">Gujarati - ગુજરાતી</option>
+          <option value="urdu">Urdu - اردو</option>
+          <option value="kannada">Kannada - ಕನ್ನಡ</option>
+          <option value="odia">Odia - ଓଡ଼ିଆ</option>
+          <option value="malayalam">Malayalam - മലയാളം</option>
+          <option value="punjabi">Punjabi - ਪੰਜਾਬੀ</option>
+          <option value="assamese">Assamese - অসমীয়া</option>
+          <option value="maithili">Maithili - मैथिली</option>
+          <option value="sindhi">Sindhi - سنڌي</option>
+          <option value="kashmiri">Kashmiri - كشميري</option>
+          <option value="konkani">Konkani - कोंकणी</option>
+          <option value="nepali">Nepali - नेपाली</option>
+          <option value="sanskrit">Sanskrit - संस्कृत</option>
+          <option value="dogri">Dogri - डोगरी</option>
+          <option value="bodo">Bodo - बड़ो</option>
+          <option value="manipuri">Manipuri - মৈতৈলোন্</option>
+          <option value="santhali">Santhali - ᱥᱟᱱᱛᱟᱲᱤ</option>
+        </select>
+      </div>
+
+      <button class="swap-btn" onclick="swapLangs()" title="Swap languages">&#x21C4;</button>
+
+      <div class="lang-col">
+        <label for="tgtLang">Translate to</label>
+        <select class="lang-select" id="tgtLang">
+          <option value="hindi">Hindi - हिन्दी</option>
+          <option value="english">English</option>
+          <option value="bengali">Bengali - বাংলা</option>
+          <option value="telugu">Telugu - తెలుగు</option>
+          <option value="marathi">Marathi - मराठी</option>
+          <option value="tamil">Tamil - தமிழ்</option>
+          <option value="gujarati">Gujarati - ગુજરાતી</option>
+          <option value="urdu">Urdu - اردو</option>
+          <option value="kannada">Kannada - ಕನ್ನಡ</option>
+          <option value="odia">Odia - ଓଡ଼ିଆ</option>
+          <option value="malayalam">Malayalam - മലയാളം</option>
+          <option value="punjabi">Punjabi - ਪੰਜਾਬੀ</option>
+          <option value="assamese">Assamese - অসমীয়া</option>
+          <option value="maithili">Maithili - मैथिली</option>
+          <option value="sindhi">Sindhi - سنڌي</option>
+          <option value="kashmiri">Kashmiri - كشميري</option>
+          <option value="konkani">Konkani - कोंकणी</option>
+          <option value="nepali">Nepali - नेपाली</option>
+          <option value="sanskrit">Sanskrit - संस्कृत</option>
+          <option value="dogri">Dogri - डोगरी</option>
+          <option value="bodo">Bodo - बड़ो</option>
+          <option value="manipuri">Manipuri - মৈতৈলোন্</option>
+          <option value="santhali">Santhali - ᱥᱟᱱᱛᱟᱲᱤ</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="detect-strip" onclick="detectLanguage()" role="button" tabindex="0">
+      <span>&#x1F50D;</span>
+      <span>Auto-detect my language from typed text</span>
+      <span class="detect-result" id="detectResult"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Speak or Type</div>
+    <div class="record-area">
+      <div class="mic-ring" id="micBtn" onclick="toggleRecord()" role="button" tabindex="0" title="Click to record">
+        <span class="mic-icon" id="micIcon">&#x1F399;&#xFE0F;</span>
+      </div>
+      <div class="rec-timer" id="recTimer">0:00</div>
+      <span class="rec-label" id="recLabel">Tap to record</span>
+      <span class="status-pill s-idle" id="statusPill">Ready</span>
+    </div>
+
+    <div class="dur-row">
+      <label for="durSlider">Duration</label>
+      <input type="range" id="durSlider" min="3" max="30" value="5" step="1"
+             oninput="document.getElementById('durVal').textContent = this.value + 's'">
+      <span class="dur-val" id="durVal">5s</span>
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-text">or type / paste below</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <textarea id="inputText" class="transcript-box"
+              placeholder="Type your text here, or use the mic above to speak..."></textarea>
+  </div>
+
+  <button class="translate-btn" id="translateBtn" onclick="doTranslate()">
+    &#x1F501;&nbsp; Translate Now
+  </button>
+
+  <div class="card" id="outputCard" style="display:none">
+    <div class="card-title"><span class="dot"></span> Translation</div>
+    <div class="output-box" id="outputText"></div>
+
+    <div class="output-actions">
+      <button class="action-btn" id="playBtn" onclick="playTranslation()">
+        <span id="playIcon">&#x25B6;</span> Listen again
+      </button>
+      <button class="action-btn" onclick="copyTranslation(this)">&#x1F4CB; Copy</button>
+      <button class="action-btn" onclick="saveToHistory()">&#x1F516; Save</button>
+    </div>
+
+    <div class="speed-row">
+      <span class="speed-label">Playback speed:</span>
+      <button class="speed-btn" onclick="setSpeed(0.75, this)">0.75x</button>
+      <button class="speed-btn active" onclick="setSpeed(1, this)">1x</button>
+      <button class="speed-btn" onclick="setSpeed(1.25, this)">1.25x</button>
+      <button class="speed-btn" onclick="setSpeed(1.5, this)">1.5x</button>
+      <button class="speed-btn" onclick="setSpeed(2, this)">2x</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Saved Translations</div>
+    <div id="historyList">
+      <div class="history-empty">No saved translations yet - hit Save after translating!</div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="rangoli">&#x1F338; &#x950; &#x1F338; &#x2638; &#x1F338;</div>
+  <p>SunoBhashini &mdash; All 22 Scheduled Indian Languages + English</p>
+  <p style="margin-top:4px">Pair with <strong>voice_translator.py</strong> for full offline mic support</p>
+</footer>
+
+<script>
+const LANG_CODES = {
+  english:'en', hindi:'hi', bengali:'bn', telugu:'te', marathi:'mr',
+  tamil:'ta', gujarati:'gu', urdu:'ur', kannada:'kn', odia:'or',
+  malayalam:'ml', punjabi:'pa', assamese:'as', maithili:'mai',
+  sindhi:'sd', kashmiri:'ks', konkani:'gom', nepali:'ne',
+  sanskrit:'sa', dogri:'doi', bodo:'brx', manipuri:'mni-Mtei', santhali:'sat'
+};
+
+const LANG_NAMES = {
+  english:'English', hindi:'Hindi', bengali:'Bengali', telugu:'Telugu',
+  marathi:'Marathi', tamil:'Tamil', gujarati:'Gujarati', urdu:'Urdu',
+  kannada:'Kannada', odia:'Odia', malayalam:'Malayalam', punjabi:'Punjabi',
+  assamese:'Assamese', maithili:'Maithili', sindhi:'Sindhi',
+  kashmiri:'Kashmiri', konkani:'Konkani', nepali:'Nepali',
+  sanskrit:'Sanskrit', dogri:'Dogri', bodo:'Bodo', manipuri:'Manipuri', santhali:'Santhali'
+};
+
+const SR_LOCALES = {
+  en:'en-IN', hi:'hi-IN', bn:'bn-IN', te:'te-IN', mr:'mr-IN',
+  ta:'ta-IN', gu:'gu-IN', ur:'ur-IN', kn:'kn-IN', or:'or-IN',
+  ml:'ml-IN', pa:'pa-IN', as:'as-IN', sa:'sa-IN', ne:'ne-NP',
+  mai:'hi-IN', sd:'ur-IN', ks:'ur-IN', gom:'hi-IN', doi:'hi-IN',
+  brx:'hi-IN', 'mni-Mtei':'hi-IN', sat:'hi-IN'
+};
+
+let playbackSpeed = 1;
+let currentUtterance = null;
+let recInterval = null;
+let recSeconds = 0;
+let isRecording = false;
+let translatedText = '';
+let translatedLang = 'hi';
+let history = [];
+let recognition = null;
+
+function setStatus(text, cls) {
+  const p = document.getElementById('statusPill');
+  p.className = 'status-pill ' + cls;
+  p.textContent = text;
+}
+
+function swapLangs() {
+  const s = document.getElementById('srcLang');
+  const t = document.getElementById('tgtLang');
+  const tmp = s.value; s.value = t.value; t.value = tmp;
+}
+
+function toggleRecord() {
+  if (isRecording) { stopRecord(); return; }
+  const hasSR = ('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window);
+  if (!hasSR) {
+    setStatus('Mic not supported - use Chrome or Edge', 's-error');
+    document.getElementById('recLabel').textContent = 'Type below instead';
+    return;
+  }
+  startRecord();
+}
+
+function startRecord() {
+  isRecording = true; recSeconds = 0;
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('micIcon').textContent = '⏹️';
+  document.getElementById('recLabel').textContent = 'Recording... tap to stop';
+  document.getElementById('recTimer').style.display = 'block';
+  setStatus('Recording', 's-recording');
+
+  const dur = parseInt(document.getElementById('durSlider').value);
+  recInterval = setInterval(function() {
+    recSeconds++;
+    const m = Math.floor(recSeconds / 60);
+    const s = recSeconds % 60;
+    document.getElementById('recTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (recSeconds >= dur) stopRecord();
+  }, 1000);
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  const srcCode = LANG_CODES[document.getElementById('srcLang').value] || 'en';
+  recognition.lang = SR_LOCALES[srcCode] || 'en-IN';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = function(e) {
+    let transcript = '';
+    for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
+    document.getElementById('inputText').value = transcript;
+  };
+  recognition.onerror = function(e) {
+    setStatus('Mic error: ' + e.error, 's-error'); stopRecord();
+  };
+  recognition.start();
+}
+
+function stopRecord() {
+  isRecording = false;
+  clearInterval(recInterval);
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('micIcon').textContent = '🎙️';
+  document.getElementById('recLabel').textContent = 'Tap to record';
+  document.getElementById('recTimer').style.display = 'none';
+  setStatus('Ready', 's-idle');
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+}
+
+function detectLanguage() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) { document.getElementById('detectResult').textContent = 'Type something first'; return; }
+  document.getElementById('detectResult').textContent = 'Detecting...';
+
+  const scripts = [
+    { re: /[\u0980-\u09FF]/, lang: 'bengali',   label: 'Bengali detected'   },
+    { re: /[\u0C00-\u0C7F]/, lang: 'telugu',    label: 'Telugu detected'    },
+    { re: /[\u0B80-\u0BFF]/, lang: 'tamil',     label: 'Tamil detected'     },
+    { re: /[\u0C80-\u0CFF]/, lang: 'kannada',   label: 'Kannada detected'   },
+    { re: /[\u0D00-\u0D7F]/, lang: 'malayalam', label: 'Malayalam detected' },
+    { re: /[\u0A80-\u0AFF]/, lang: 'gujarati',  label: 'Gujarati detected'  },
+    { re: /[\u0B00-\u0B7F]/, lang: 'odia',      label: 'Odia detected'      },
+    { re: /[\u0A00-\u0A7F]/, lang: 'punjabi',   label: 'Punjabi detected'   },
+    { re: /[\u0900-\u097F]/, lang: 'hindi',     label: 'Hindi detected'     },
+    { re: /[\u0600-\u06FF]/, lang: 'urdu',      label: 'Urdu detected'      },
+    { re: /[a-zA-Z]/,        lang: 'english',   label: 'English detected'   }
+  ];
+
+  let found = null;
+  for (const s of scripts) { if (s.re.test(text)) { found = s; break; } }
+  if (found) {
+    document.getElementById('detectResult').textContent = '✓ ' + found.label;
+    document.getElementById('srcLang').value = found.lang;
+  } else {
+    document.getElementById('detectResult').textContent = 'Could not detect';
+  }
+}
+
+async function doTranslate() {
+
+  const text = document.getElementById('inputText').value.trim();
+
+  if (!text) {
+
+    alert("Enter text first");
+    return;
+
+  }
+
+  const src = document.getElementById('srcLang').value;
+  const tgt = document.getElementById('tgtLang').value;
+
+  try {
+
+    const response = await fetch(
+      "http://127.0.0.1:5000/translate",
+      {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+          text: text,
+          src: src,
+          tgt: tgt
+
+        })
+
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.error) {
+
+      alert(data.error);
+      return;
+
+    }
+
+    translatedText = data.translated_text;
+
+    document.getElementById("outputText").textContent =
+      data.translated_text;
+
+    document.getElementById("outputCard").style.display =
+      "block";
+
+    // ==========================================
+    // PLAY AUDIO
+    // ==========================================
+
+    if (data.audio_url) {
+
+      const audio = new Audio(data.audio_url);
+
+      audio.play();
+
+    } else {
+
+      alert(
+        "Translation available but audio is not supported for this language yet."
+      );
+
+    }
+
+  } catch(err) {
+
+    console.log(err);
+
+    alert("Translation failed");
+
+  }
+}
+
+function setSpeed(s, btn) {
+  playbackSpeed = s;
+  document.querySelectorAll('.speed-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function playTranslation() {
+  if (!translatedText) return;
+  if (speechSynthesis.speaking) speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance(translatedText);
+  utter.lang = translatedLang;
+  utter.rate = playbackSpeed;
+  currentUtterance = utter;
+
+  const btn  = document.getElementById('playBtn');
+  const icon = document.getElementById('playIcon');
+  btn.classList.add('active');
+  icon.textContent = '⏸';
+
+  utter.onend   = function() { btn.classList.remove('active'); icon.textContent = '▶'; };
+  utter.onerror = function() { btn.classList.remove('active'); icon.textContent = '▶'; };
+  speechSynthesis.speak(utter);
+}
+
+function copyTranslation(btn) {
+  if (!translatedText) return;
+  navigator.clipboard.writeText(translatedText).then(function() {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(function() { btn.innerHTML = orig; }, 1800);
+  });
+}
+
+function saveToHistory() {
+  if (!translatedText) return;
+  const src = document.getElementById('srcLang').value;
+  const tgt = document.getElementById('tgtLang').value;
+  const input = document.getElementById('inputText').value.trim();
+  history.unshift({ src: LANG_NAMES[src]||src, tgt: LANG_NAMES[tgt]||tgt, tgtCode: LANG_CODES[tgt]||'hi', input: input, output: translatedText });
+  renderHistory();
+  const btns = document.querySelectorAll('.action-btn');
+  btns.forEach(function(b) {
+    if (b.textContent.includes('Save')) {
+      const orig = b.innerHTML; b.innerHTML = '✓ Saved!';
+      setTimeout(function() { b.innerHTML = orig; }, 1500);
+    }
+  });
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (history.length === 0) {
+    el.innerHTML = '<div class="history-empty">No saved translations yet - hit Save after translating!</div>';
+    return;
+  }
+  el.innerHTML = history.map(function(h, i) {
+    const inp = h.input.length > 65 ? h.input.substring(0,65)+'...' : h.input;
+    const out = h.output.length > 65 ? h.output.substring(0,65)+'...' : h.output;
+    return '<div class="history-item">' +
+      '<div class="history-langs">' + h.src + ' &rarr; ' + h.tgt + '</div>' +
+      '<div class="history-texts">"' + inp + '"<br>&rarr; <strong>' + out + '</strong></div>' +
+      '<div class="history-actions">' +
+        '<button class="history-btn" onclick="replayHistory(' + i + ')">&#x25B6; Play</button>' +
+        '<button class="history-btn" onclick="loadHistory(' + i + ')">&#x21A9; Load</button>' +
+        '<button class="history-btn" onclick="deleteHistory(' + i + ')">&#x2715; Delete</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function replayHistory(i) {
+  if (speechSynthesis.speaking) speechSynthesis.cancel();
+  const h = history[i];
+  const utter = new SpeechSynthesisUtterance(h.output);
+  utter.lang = h.tgtCode; utter.rate = playbackSpeed;
+  speechSynthesis.speak(utter);
+}
+
+function loadHistory(i) {
+  const h = history[i];
+  document.getElementById('inputText').value = h.input;
+  translatedText = h.output; translatedLang = h.tgtCode;
+  document.getElementById('outputText').textContent = h.output;
+  document.getElementById('outputCard').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteHistory(i) {
+  history.splice(i, 1); renderHistory();
+}
+
+document.getElementById('micBtn').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRecord(); }
+});
+</script>
+</body>
+>>>>>>> 5bddd521728ea395c420fca1e299aaf7b4f07b6d
 </html>

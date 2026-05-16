@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 flask
 flask-cors
 deep-translator
 gtts
+=======
+flask
+flask-cors
+deep-translator
+gtts
+>>>>>>> 5bddd521728ea395c420fca1e299aaf7b4f07b6d
 gunicorn
