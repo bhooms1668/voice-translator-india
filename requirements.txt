@@ -3,10 +3,3 @@ flask-cors
 deep-translator
 gtts
 gunicorn
-SpeechRecognition
-openai-whisper
-soundfile
-torch
-torchaudio
-ffmpeg-python
-numpy
