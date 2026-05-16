@@ -92,32 +92,68 @@
   }
   .swap-btn:hover { background: #FFE0C2; transform: rotate(180deg); }
 
+  /* ── Detect strip: text detect ── */
   .detect-strip {
     background: var(--cream-lt); border: 1.5px dashed var(--border-md);
     border-radius: 10px; padding: 12px 16px;
     display: flex; align-items: center; gap: 10px;
-    cursor: pointer; transition: background 0.2s; margin-top: 12px;
+    cursor: pointer; transition: background 0.2s; margin-top: 10px;
   }
   .detect-strip:hover { background: #FFE8C8; }
   .detect-strip span { font-size: 13px; color: var(--text-lt); }
   .detect-result { font-size: 13px; font-weight: 500; color: var(--saffron); margin-left: auto; }
 
+  /* ── Detect from AUDIO button ── */
+  .detect-audio-btn {
+    width: 100%; margin-top: 10px; padding: 12px 16px;
+    background: var(--cream-lt); border: 1.5px dashed var(--border-md);
+    border-radius: 10px; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: background 0.2s;
+    font-family: 'Poppins', sans-serif; font-size: 13px; color: var(--text-lt);
+    text-align: left;
+  }
+  .detect-audio-btn:hover { background: #FFE8C8; border-color: var(--saffron-lt); }
+  .detect-audio-btn.detecting { border-color: var(--saffron); border-style: solid; color: var(--saffron); background: #FFE0C2; }
+  .detect-audio-result { font-size: 13px; font-weight: 500; color: var(--saffron); margin-left: auto; white-space: nowrap; }
+
+  /* ── Record area ── */
   .record-area { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0 4px; }
+
   .mic-ring {
-    width: 90px; height: 90px; border-radius: 50%;
+    width: 96px; height: 96px; border-radius: 50%;
     background: var(--cream-lt); border: 3px solid var(--border);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.2s; user-select: none;
   }
   .mic-ring:hover { border-color: var(--saffron-lt); background: #FFE8C8; }
-  .mic-ring.recording { border-color: var(--saffron); background: #FFE0C2; animation: pulse 1.2s ease-in-out infinite; }
+  .mic-ring.recording {
+    border-color: var(--saffron); background: #FFE0C2;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
   @keyframes pulse {
     0%,100% { box-shadow: 0 0 0 0 rgba(181,69,27,0.25); }
-    50%      { box-shadow: 0 0 0 16px rgba(181,69,27,0); }
+    50%      { box-shadow: 0 0 0 18px rgba(181,69,27,0); }
   }
-  .mic-icon { font-size: 36px; pointer-events: none; }
-  .rec-label { font-size: 13px; color: var(--text-lt); }
-  .rec-timer { font-size: 24px; font-weight: 600; color: var(--saffron); font-variant-numeric: tabular-nums; display: none; }
+  .mic-icon { font-size: 38px; pointer-events: none; }
+  .rec-label { font-size: 13px; color: var(--text-lt); font-weight: 500; }
+  .rec-hint  { font-size: 11px; color: var(--text-dim); text-align: center; }
+  .rec-timer { font-size: 26px; font-weight: 600; color: var(--saffron); font-variant-numeric: tabular-nums; display: none; }
+
+  /* Waveform */
+  .waveform { display: none; align-items: center; gap: 3px; height: 30px; }
+  .waveform.active { display: flex; }
+  .wave-bar { width: 4px; border-radius: 2px; background: var(--saffron); animation: wave 0.8s ease-in-out infinite; }
+  .wave-bar:nth-child(1){animation-delay:0s;height:8px}
+  .wave-bar:nth-child(2){animation-delay:.1s;height:20px}
+  .wave-bar:nth-child(3){animation-delay:.2s;height:28px}
+  .wave-bar:nth-child(4){animation-delay:.3s;height:16px}
+  .wave-bar:nth-child(5){animation-delay:.4s;height:24px}
+  .wave-bar:nth-child(6){animation-delay:.2s;height:12px}
+  .wave-bar:nth-child(7){animation-delay:.1s;height:20px}
+  @keyframes wave {
+    0%,100% { transform: scaleY(1); opacity: 0.7; }
+    50%      { transform: scaleY(1.6); opacity: 1; }
+  }
 
   .status-pill {
     display: inline-flex; align-items: center; gap: 6px;
@@ -128,11 +164,6 @@
   .s-processing { background: var(--cream-lt); color: var(--saffron-lt); }
   .s-done       { background: #EAF3DE; color: #3B6D11; }
   .s-error      { background: #FCEBEB; color: #A32D2D; }
-
-  .dur-row { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 16px; }
-  .dur-row label { font-size: 12px; color: var(--text-lt); white-space: nowrap; }
-  .dur-row input[type=range] { flex: 1; accent-color: var(--saffron-lt); cursor: pointer; }
-  .dur-val { font-size: 13px; font-weight: 500; color: var(--saffron); min-width: 32px; }
 
   .divider { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; }
   .divider-line { flex: 1; height: 1px; background: var(--border); }
@@ -166,6 +197,25 @@
     white-space: pre-wrap; word-break: break-word;
   }
 
+  /* ── Audio player ── */
+  .audio-player-wrap {
+    background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px; margin-top: 14px;
+  }
+  .play-big-btn {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--saffron);
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background 0.2s;
+  }
+  .play-big-btn:hover { background: var(--saffron-lt); }
+  .play-big-btn svg { fill: white; width: 18px; height: 18px; margin-left: 2px; }
+  .play-big-btn.paused svg { margin-left: 0; }
+  .audio-bar-wrap { flex: 1; }
+  .audio-progress { width: 100%; height: 4px; border-radius: 2px; accent-color: var(--saffron-lt); cursor: pointer; }
+  .audio-time { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .audio-note { font-size: 12px; color: var(--text-dim); font-style: italic; margin-top: 10px; }
+
   .output-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
   .action-btn {
     display: flex; align-items: center; gap: 6px;
@@ -195,7 +245,7 @@
   .history-item:hover { background: var(--cream-lt); }
   .history-langs { font-size: 11px; color: var(--saffron); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
   .history-texts { font-size: 13px; color: var(--text-md); line-height: 1.5; }
-  .history-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .history-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
   .history-btn {
     padding: 4px 12px; font-size: 12px; border-radius: 6px;
     border: 1.5px solid var(--border); background: #fff;
@@ -248,6 +298,7 @@
 
 <main class="main">
 
+  <!-- ── CARD 1: Language chooser ── -->
   <div class="card">
     <div class="card-title"><span class="dot"></span> Choose Languages</div>
     <div class="lang-grid">
@@ -312,29 +363,44 @@
       </div>
     </div>
 
-    <div class="detect-strip" onclick="detectLanguage()" role="button" tabindex="0">
+    <!-- Detect from TYPED text (script-based, works offline) -->
+    <div class="detect-strip" onclick="detectLanguageFromText()" role="button" tabindex="0">
       <span>&#x1F50D;</span>
-      <span>Auto-detect my language from typed text</span>
+      <span>Detect language from typed text</span>
       <span class="detect-result" id="detectResult"></span>
     </div>
+
+    <!-- NEW: Detect from AUDIO using Whisper -->
+    <button class="detect-audio-btn" id="detectAudioBtn" onclick="detectFromAudio()">
+      <span id="detectAudioIcon">&#x1F50A;</span>
+      <span id="detectAudioText">Detect language from voice — click to record, click again to detect</span>
+      <span class="detect-audio-result" id="detectAudioResult"></span>
+    </button>
   </div>
 
+  <!-- ── CARD 2: Record / Type ── -->
   <div class="card">
     <div class="card-title"><span class="dot"></span> Speak or Type</div>
+
     <div class="record-area">
-      <div class="mic-ring" id="micBtn" onclick="toggleRecord()" role="button" tabindex="0" title="Click to record">
+      <!-- Click to start, click to stop — no duration limit -->
+      <div class="mic-ring" id="micBtn" onclick="toggleRecord()" role="button" tabindex="0"
+           title="Click to start recording, click again to stop">
         <span class="mic-icon" id="micIcon">&#x1F399;&#xFE0F;</span>
       </div>
-      <div class="rec-timer" id="recTimer">0:00</div>
-      <span class="rec-label" id="recLabel">Tap to record</span>
-      <span class="status-pill s-idle" id="statusPill">Ready</span>
-    </div>
 
-    <div class="dur-row">
-      <label for="durSlider">Duration</label>
-      <input type="range" id="durSlider" min="3" max="30" value="5" step="1"
-             oninput="document.getElementById('durVal').textContent = this.value + 's'">
-      <span class="dur-val" id="durVal">5s</span>
+      <div class="rec-timer" id="recTimer">0:00</div>
+
+      <!-- Animated waveform while recording -->
+      <div class="waveform" id="waveform">
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+
+      <span class="rec-label" id="recLabel">Click mic to start recording</span>
+      <span class="rec-hint">No time limit &mdash; speak naturally, click mic again to stop</span>
+      <span class="status-pill s-idle" id="statusPill">Ready</span>
     </div>
 
     <div class="divider">
@@ -344,35 +410,55 @@
     </div>
 
     <textarea id="inputText" class="transcript-box"
-              placeholder="Type your text here, or use the mic above to speak..."></textarea>
+              placeholder="Your speech will appear here, or type directly..."></textarea>
   </div>
 
+  <!-- ── TRANSLATE BUTTON ── -->
   <button class="translate-btn" id="translateBtn" onclick="doTranslate()">
     &#x1F501;&nbsp; Translate Now
   </button>
 
+  <!-- ── CARD 3: Output ── -->
   <div class="card" id="outputCard" style="display:none">
     <div class="card-title"><span class="dot"></span> Translation</div>
     <div class="output-box" id="outputText"></div>
 
-    <div class="output-actions">
-      <button class="action-btn" id="playBtn" onclick="playTranslation()">
-        <span id="playIcon">&#x25B6;</span> Listen again
-      </button>
-      <button class="action-btn" onclick="copyTranslation(this)">&#x1F4CB; Copy</button>
-      <button class="action-btn" onclick="saveToHistory()">&#x1F516; Save</button>
+    <!-- Python gTTS audio player (all supported languages) -->
+    <div id="audioSection" style="display:none">
+      <div class="audio-player-wrap">
+        <button class="play-big-btn" id="playBigBtn" onclick="toggleAudio()">
+          <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        </button>
+        <div class="audio-bar-wrap">
+          <input type="range" class="audio-progress" id="audioProgress"
+                 value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
+          <div class="audio-time" id="audioTime">0:00 / 0:00</div>
+        </div>
+      </div>
+      <div class="speed-row">
+        <span class="speed-label">Playback speed:</span>
+        <button class="speed-btn" onclick="setAudioSpeed(0.75,this)">0.75x</button>
+        <button class="speed-btn active" onclick="setAudioSpeed(1,this)">1x</button>
+        <button class="speed-btn" onclick="setAudioSpeed(1.25,this)">1.25x</button>
+        <button class="speed-btn" onclick="setAudioSpeed(1.5,this)">1.5x</button>
+        <button class="speed-btn" onclick="setAudioSpeed(2,this)">2x</button>
+      </div>
     </div>
 
-    <div class="speed-row">
-      <span class="speed-label">Playback speed:</span>
-      <button class="speed-btn" onclick="setSpeed(0.75, this)">0.75x</button>
-      <button class="speed-btn active" onclick="setSpeed(1, this)">1x</button>
-      <button class="speed-btn" onclick="setSpeed(1.25, this)">1.25x</button>
-      <button class="speed-btn" onclick="setSpeed(1.5, this)">1.5x</button>
-      <button class="speed-btn" onclick="setSpeed(2, this)">2x</button>
+    <div class="audio-note" id="audioNote" style="display:none">
+      &#x26A0;&#xFE0F; Audio not available for this language yet.
+    </div>
+
+    <div class="output-actions">
+      <button class="action-btn" onclick="copyTranslation(this)">&#x1F4CB; Copy</button>
+      <button class="action-btn" onclick="saveToHistory()">&#x1F516; Save</button>
+      <button class="action-btn" onclick="downloadAudio()" id="downloadBtn" style="display:none">
+        &#x2B07; Download MP3
+      </button>
     </div>
   </div>
 
+  <!-- ── CARD 4: History ── -->
   <div class="card">
     <div class="card-title"><span class="dot"></span> Saved Translations</div>
     <div id="historyList">
@@ -385,10 +471,11 @@
 <footer class="footer">
   <div class="rangoli">&#x1F338; &#x950; &#x1F338; &#x2638; &#x1F338;</div>
   <p>SunoBhashini &mdash; All 22 Scheduled Indian Languages + English</p>
-  <p style="margin-top:4px">Pair with <strong>voice_translator.py</strong> for full offline mic support</p>
+  <p style="margin-top:4px">Powered by Python + gTTS + Whisper</p>
 </footer>
 
 <script>
+// ── Language maps ──────────────────────────────────────────────────────────────
 const LANG_CODES = {
   english:'en', hindi:'hi', bengali:'bn', telugu:'te', marathi:'mr',
   tamil:'ta', gujarati:'gu', urdu:'ur', kannada:'kn', odia:'or',
@@ -396,7 +483,6 @@ const LANG_CODES = {
   sindhi:'sd', kashmiri:'ks', konkani:'gom', nepali:'ne',
   sanskrit:'sa', dogri:'doi', bodo:'brx', manipuri:'mni-Mtei', santhali:'sat'
 };
-
 const LANG_NAMES = {
   english:'English', hindi:'Hindi', bengali:'Bengali', telugu:'Telugu',
   marathi:'Marathi', tamil:'Tamil', gujarati:'Gujarati', urdu:'Urdu',
@@ -405,113 +491,65 @@ const LANG_NAMES = {
   kashmiri:'Kashmiri', konkani:'Konkani', nepali:'Nepali',
   sanskrit:'Sanskrit', dogri:'Dogri', bodo:'Bodo', manipuri:'Manipuri', santhali:'Santhali'
 };
-
 const SR_LOCALES = {
-  en:'en-IN', hi:'hi-IN', bn:'bn-IN', te:'te-IN', mr:'mr-IN',
-  ta:'ta-IN', gu:'gu-IN', ur:'ur-IN', kn:'kn-IN', or:'or-IN',
-  ml:'ml-IN', pa:'pa-IN', as:'as-IN', sa:'sa-IN', ne:'ne-NP',
-  mai:'hi-IN', sd:'ur-IN', ks:'ur-IN', gom:'hi-IN', doi:'hi-IN',
-  brx:'hi-IN', 'mni-Mtei':'hi-IN', sat:'hi-IN'
+  en:'en-IN', hi:'hi-IN', bn:'bn-IN', te:'te-IN', mr:'mr-IN', ta:'ta-IN',
+  gu:'gu-IN', ur:'ur-IN', kn:'kn-IN', or:'or-IN', ml:'ml-IN', pa:'pa-IN',
+  as:'as-IN', sa:'sa-IN', ne:'ne-NP', mai:'hi-IN', sd:'ur-IN', ks:'ur-IN',
+  gom:'hi-IN', doi:'hi-IN', brx:'hi-IN', 'mni-Mtei':'hi-IN', sat:'hi-IN'
 };
 
-let playbackSpeed = 1;
-let currentUtterance = null;
-let recInterval = null;
-let recSeconds = 0;
-let isRecording = false;
-let translatedText = '';
-let translatedLang = 'hi';
-let history = [];
-let recognition = null;
+// ── State ──────────────────────────────────────────────────────────────────────
+let isRecording        = false;
+let recInterval        = null;
+let recSeconds         = 0;
+let mediaRecorder      = null;
+let audioChunks        = [];
+let recognition        = null;   // Web Speech API fallback
+let currentAudio       = null;   // HTMLAudioElement
+let currentAudioB64    = null;
+let translatedText     = '';
+let history            = [];
 
+// detect-audio state
+let detectRecording    = false;
+let detectMediaRecorder= null;
+let detectAudioChunks  = [];
+let detectInterval     = null;
+let detectSeconds      = 0;
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
 function setStatus(text, cls) {
   const p = document.getElementById('statusPill');
   p.className = 'status-pill ' + cls;
   p.textContent = text;
 }
-
 function swapLangs() {
-  const s = document.getElementById('srcLang');
-  const t = document.getElementById('tgtLang');
+  const s = document.getElementById('srcLang'), t = document.getElementById('tgtLang');
   const tmp = s.value; s.value = t.value; t.value = tmp;
 }
-
-function toggleRecord() {
-  if (isRecording) { stopRecord(); return; }
-  const hasSR = ('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window);
-  if (!hasSR) {
-    setStatus('Mic not supported - use Chrome or Edge', 's-error');
-    document.getElementById('recLabel').textContent = 'Type below instead';
-    return;
-  }
-  startRecord();
+function fmtTime(s) {
+  const m = Math.floor(s / 60); s = Math.floor(s % 60);
+  return m + ':' + (s < 10 ? '0' : '') + s;
 }
 
-function startRecord() {
-  isRecording = true; recSeconds = 0;
-  document.getElementById('micBtn').classList.add('recording');
-  document.getElementById('micIcon').textContent = '⏹️';
-  document.getElementById('recLabel').textContent = 'Recording... tap to stop';
-  document.getElementById('recTimer').style.display = 'block';
-  setStatus('Recording', 's-recording');
-
-  const dur = parseInt(document.getElementById('durSlider').value);
-  recInterval = setInterval(function() {
-    recSeconds++;
-    const m = Math.floor(recSeconds / 60);
-    const s = recSeconds % 60;
-    document.getElementById('recTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
-    if (recSeconds >= dur) stopRecord();
-  }, 1000);
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  const srcCode = LANG_CODES[document.getElementById('srcLang').value] || 'en';
-  recognition.lang = SR_LOCALES[srcCode] || 'en-IN';
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  recognition.onresult = function(e) {
-    let transcript = '';
-    for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
-    document.getElementById('inputText').value = transcript;
-  };
-  recognition.onerror = function(e) {
-    setStatus('Mic error: ' + e.error, 's-error'); stopRecord();
-  };
-  recognition.start();
-}
-
-function stopRecord() {
-  isRecording = false;
-  clearInterval(recInterval);
-  document.getElementById('micBtn').classList.remove('recording');
-  document.getElementById('micIcon').textContent = '🎙️';
-  document.getElementById('recLabel').textContent = 'Tap to record';
-  document.getElementById('recTimer').style.display = 'none';
-  setStatus('Ready', 's-idle');
-  if (recognition) { try { recognition.stop(); } catch(e) {} }
-}
-
-function detectLanguage() {
+// ── Detect language from TYPED text (script-based, no server needed) ──────────
+function detectLanguageFromText() {
   const text = document.getElementById('inputText').value.trim();
   if (!text) { document.getElementById('detectResult').textContent = 'Type something first'; return; }
   document.getElementById('detectResult').textContent = 'Detecting...';
-
   const scripts = [
-    { re: /[\u0980-\u09FF]/, lang: 'bengali',   label: 'Bengali detected'   },
-    { re: /[\u0C00-\u0C7F]/, lang: 'telugu',    label: 'Telugu detected'    },
-    { re: /[\u0B80-\u0BFF]/, lang: 'tamil',     label: 'Tamil detected'     },
-    { re: /[\u0C80-\u0CFF]/, lang: 'kannada',   label: 'Kannada detected'   },
-    { re: /[\u0D00-\u0D7F]/, lang: 'malayalam', label: 'Malayalam detected' },
-    { re: /[\u0A80-\u0AFF]/, lang: 'gujarati',  label: 'Gujarati detected'  },
-    { re: /[\u0B00-\u0B7F]/, lang: 'odia',      label: 'Odia detected'      },
-    { re: /[\u0A00-\u0A7F]/, lang: 'punjabi',   label: 'Punjabi detected'   },
-    { re: /[\u0900-\u097F]/, lang: 'hindi',     label: 'Hindi detected'     },
-    { re: /[\u0600-\u06FF]/, lang: 'urdu',      label: 'Urdu detected'      },
-    { re: /[a-zA-Z]/,        lang: 'english',   label: 'English detected'   }
+    { re:/[\u0980-\u09FF]/, lang:'bengali',   label:'Bengali'   },
+    { re:/[\u0C00-\u0C7F]/, lang:'telugu',    label:'Telugu'    },
+    { re:/[\u0B80-\u0BFF]/, lang:'tamil',     label:'Tamil'     },
+    { re:/[\u0C80-\u0CFF]/, lang:'kannada',   label:'Kannada'   },
+    { re:/[\u0D00-\u0D7F]/, lang:'malayalam', label:'Malayalam' },
+    { re:/[\u0A80-\u0AFF]/, lang:'gujarati',  label:'Gujarati'  },
+    { re:/[\u0B00-\u0B7F]/, lang:'odia',      label:'Odia'      },
+    { re:/[\u0A00-\u0A7F]/, lang:'punjabi',   label:'Punjabi'   },
+    { re:/[\u0900-\u097F]/, lang:'hindi',     label:'Hindi'     },
+    { re:/[\u0600-\u06FF]/, lang:'urdu',      label:'Urdu'      },
+    { re:/[a-zA-Z]/,        lang:'english',   label:'English'   }
   ];
-
   let found = null;
   for (const s of scripts) { if (s.re.test(text)) { found = s; break; } }
   if (found) {
@@ -522,177 +560,314 @@ function detectLanguage() {
   }
 }
 
-async function doTranslate() {
+// ── Detect language from AUDIO using Whisper on server ────────────────────────
+async function detectFromAudio() {
+  if (!detectRecording) {
+    // START
+    try {
+      detectAudioChunks = []; detectSeconds = 0;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      detectMediaRecorder = new MediaRecorder(stream);
+      detectMediaRecorder.ondataavailable = e => { if (e.data.size > 0) detectAudioChunks.push(e.data); };
+      detectMediaRecorder.onstop = sendDetectAudio;
+      detectMediaRecorder.start();
+      detectRecording = true;
 
-  const text = document.getElementById('inputText').value.trim();
+      document.getElementById('detectAudioBtn').classList.add('detecting');
+      document.getElementById('detectAudioIcon').textContent = '⏹️';
+      document.getElementById('detectAudioText').textContent = 'Recording... click again to detect';
+      document.getElementById('detectAudioResult').textContent = '';
 
-  if (!text) {
-
-    alert("Enter text first");
-    return;
-
+      detectInterval = setInterval(function() {
+        detectSeconds++;
+        document.getElementById('detectAudioText').textContent =
+          'Recording (' + detectSeconds + 's)... click again to detect';
+      }, 1000);
+    } catch(e) {
+      document.getElementById('detectAudioResult').textContent = 'Mic error';
+    }
+  } else {
+    // STOP
+    detectRecording = false;
+    clearInterval(detectInterval);
+    if (detectMediaRecorder && detectMediaRecorder.state !== 'inactive') {
+      detectMediaRecorder.stop();
+      detectMediaRecorder.stream.getTracks().forEach(t => t.stop());
+    }
+    document.getElementById('detectAudioBtn').classList.remove('detecting');
+    document.getElementById('detectAudioIcon').textContent = '🔊';
+    document.getElementById('detectAudioText').textContent = 'Detect language from voice — click to record, click again to detect';
+    document.getElementById('detectAudioResult').textContent = 'Detecting...';
   }
+}
+
+async function sendDetectAudio() {
+  const blob = new Blob(detectAudioChunks, { type: 'audio/webm' });
+  const fd = new FormData();
+  fd.append('audio', blob, 'detect.webm');
+  fd.append('detect_lang', 'true');
+  try {
+    const res  = await fetch('/stt', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.detected_lang) {
+      const name = data.detected_lang.charAt(0).toUpperCase() + data.detected_lang.slice(1);
+      document.getElementById('detectAudioResult').textContent = '✓ ' + name + ' (' + data.confidence + '%)';
+      // Auto-set source language dropdown
+      const opt = document.getElementById('srcLang').querySelector('option[value="' + data.detected_lang + '"]');
+      if (opt) document.getElementById('srcLang').value = data.detected_lang;
+    } else {
+      document.getElementById('detectAudioResult').textContent = 'Could not detect';
+    }
+  } catch(e) {
+    document.getElementById('detectAudioResult').textContent = 'Detection failed';
+  }
+}
+
+// ── Main recording: click-to-start / click-to-stop, NO time limit ─────────────
+function toggleRecord() {
+  if (isRecording) { stopRecord(); return; }
+  startRecord();
+}
+
+async function startRecord() {
+  isRecording = true; recSeconds = 0; audioChunks = [];
+  document.getElementById('micBtn').classList.add('recording');
+  document.getElementById('micIcon').textContent = '⏹️';
+  document.getElementById('recLabel').textContent = 'Recording... click mic to stop';
+  document.getElementById('recTimer').style.display = 'block';
+  document.getElementById('waveform').classList.add('active');
+  setStatus('● Recording', 's-recording');
+
+  // Live timer — no auto-stop
+  recInterval = setInterval(function() {
+    recSeconds++;
+    const m = Math.floor(recSeconds / 60), s = recSeconds % 60;
+    document.getElementById('recTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }, 1000);
+
+  // Try MediaRecorder → server STT (better quality, all languages)
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = sendAudioForSTT;
+    mediaRecorder.start();
+    return;
+  } catch(e) {
+    console.warn('MediaRecorder failed, using Web Speech API fallback:', e);
+  }
+
+  // Fallback: browser Web Speech API
+  const hasSR = ('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window);
+  if (!hasSR) { setStatus('Mic not supported — type below', 's-error'); stopRecord(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  const code = LANG_CODES[document.getElementById('srcLang').value] || 'en';
+  recognition.lang = SR_LOCALES[code] || 'en-IN';
+  recognition.continuous = true; recognition.interimResults = true;
+  recognition.onresult = function(e) {
+    let t = '';
+    for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+    document.getElementById('inputText').value = t;
+  };
+  recognition.onerror = function(e) { setStatus('Mic error: ' + e.error, 's-error'); stopRecord(); };
+  recognition.start();
+}
+
+function stopRecord() {
+  isRecording = false;
+  clearInterval(recInterval);
+  document.getElementById('micBtn').classList.remove('recording');
+  document.getElementById('micIcon').textContent = '🎙️';
+  document.getElementById('recLabel').textContent = 'Click mic to start recording';
+  document.getElementById('recTimer').style.display = 'none';
+  document.getElementById('waveform').classList.remove('active');
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+  setStatus('Ready', 's-idle');
+}
+
+async function sendAudioForSTT() {
+  setStatus('Recognising speech...', 's-processing');
+  const blob = new Blob(audioChunks, { type: 'audio/webm' });
+  const fd = new FormData();
+  fd.append('audio', blob, 'audio.webm');
+  fd.append('src', document.getElementById('srcLang').value);
+  try {
+    const res  = await fetch('/stt', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.text) {
+      document.getElementById('inputText').value = data.text;
+      setStatus('Speech recognised ✓', 's-done');
+    } else {
+      setStatus('Could not recognise — try again', 's-error');
+    }
+  } catch(e) {
+    setStatus('STT request failed', 's-error');
+  }
+}
+
+// ── Translate ─────────────────────────────────────────────────────────────────
+async function doTranslate() {
+  const text = document.getElementById('inputText').value.trim();
+  if (!text) { alert('Enter text first'); return; }
 
   const src = document.getElementById('srcLang').value;
   const tgt = document.getElementById('tgtLang').value;
 
+  document.getElementById('translateBtn').disabled = true;
+  setStatus('Translating...', 's-processing');
+
   try {
+    const res  = await fetch('/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text, src: src, tgt: tgt })
+    });
+    const data = await res.json();
 
-    const response = await fetch(
-      "/translate",
-      {
+    if (data.error) { alert(data.error); return; }
 
-        method: "POST",
+    translatedText  = data.translated_text;
+    currentAudioB64 = data.audio_b64 || null;
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+    document.getElementById('outputText').textContent = data.translated_text;
+    document.getElementById('outputCard').style.display = 'block';
+    setStatus('Done ✓', 's-done');
 
-        body: JSON.stringify({
-
-          text: text,
-          src: src,
-          tgt: tgt
-
-        })
-
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.error) {
-
-      alert(data.error);
-      return;
-
-    }
-
-    translatedText = data.translated_text;
-
-    document.getElementById("outputText").textContent =
-      data.translated_text;
-
-    document.getElementById("outputCard").style.display =
-      "block";
-
-    // ==========================================
-    // PLAY AUDIO
-    // ==========================================
-
-    if (data.audio_url) {
-
-      const audio = new Audio(data.audio_url);
-
-      audio.play();
-
+    // ── Show audio player if server returned base64 audio ─────────────────
+    if (data.audio_b64) {
+      setupAudioPlayer(data.audio_b64);
+      document.getElementById('audioSection').style.display = 'block';
+      document.getElementById('audioNote').style.display    = 'none';
+      document.getElementById('downloadBtn').style.display  = 'flex';
     } else {
-
-      alert(
-        "Translation available but audio is not supported for this language yet."
-      );
-
+      document.getElementById('audioSection').style.display = 'none';
+      document.getElementById('audioNote').style.display    = 'block';
+      document.getElementById('downloadBtn').style.display  = 'none';
     }
+
+    document.getElementById('outputCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   } catch(err) {
-
-    console.log(err);
-
-    alert("Translation failed");
-
+    console.error(err);
+    alert('Translation failed');
+    setStatus('Error', 's-error');
   }
+
+  document.getElementById('translateBtn').disabled = false;
 }
 
-function setSpeed(s, btn) {
-  playbackSpeed = s;
-  document.querySelectorAll('.speed-btn').forEach(function(b) { b.classList.remove('active'); });
+// ── Audio player ──────────────────────────────────────────────────────────────
+function setupAudioPlayer(b64) {
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  currentAudio = new Audio('data:audio/mp3;base64,' + b64);
+  currentAudio.ontimeupdate = updateProgress;
+  currentAudio.onended = function() {
+    setPlayIcon(false);
+    document.getElementById('audioProgress').value = 0;
+  };
+}
+function toggleAudio() {
+  if (!currentAudio) return;
+  if (currentAudio.paused) { currentAudio.play(); setPlayIcon(true); }
+  else { currentAudio.pause(); setPlayIcon(false); }
+}
+function setPlayIcon(playing) {
+  const btn = document.getElementById('playBigBtn');
+  btn.innerHTML = playing
+    ? '<svg viewBox="0 0 24 24" fill="white"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>';
+}
+function updateProgress() {
+  if (!currentAudio || !currentAudio.duration) return;
+  document.getElementById('audioProgress').value = (currentAudio.currentTime / currentAudio.duration) * 100;
+  document.getElementById('audioTime').textContent = fmtTime(currentAudio.currentTime) + ' / ' + fmtTime(currentAudio.duration);
+}
+function seekAudio(v) {
+  if (currentAudio && currentAudio.duration) currentAudio.currentTime = (v / 100) * currentAudio.duration;
+}
+function setAudioSpeed(rate, btn) {
+  if (currentAudio) currentAudio.playbackRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
-function playTranslation() {
-  if (!translatedText) return;
-  if (speechSynthesis.speaking) speechSynthesis.cancel();
-
-  const utter = new SpeechSynthesisUtterance(translatedText);
-  utter.lang = translatedLang;
-  utter.rate = playbackSpeed;
-  currentUtterance = utter;
-
-  const btn  = document.getElementById('playBtn');
-  const icon = document.getElementById('playIcon');
-  btn.classList.add('active');
-  icon.textContent = '⏸';
-
-  utter.onend   = function() { btn.classList.remove('active'); icon.textContent = '▶'; };
-  utter.onerror = function() { btn.classList.remove('active'); icon.textContent = '▶'; };
-  speechSynthesis.speak(utter);
+function downloadAudio() {
+  if (!currentAudioB64) return;
+  const a = document.createElement('a');
+  a.href = 'data:audio/mp3;base64,' + currentAudioB64;
+  a.download = 'sunobhashini.mp3'; a.click();
 }
 
+// ── Copy ──────────────────────────────────────────────────────────────────────
 function copyTranslation(btn) {
   if (!translatedText) return;
   navigator.clipboard.writeText(translatedText).then(function() {
-    const orig = btn.innerHTML;
-    btn.innerHTML = '✓ Copied!';
+    const orig = btn.innerHTML; btn.innerHTML = '✓ Copied!';
     setTimeout(function() { btn.innerHTML = orig; }, 1800);
   });
 }
 
+// ── History ───────────────────────────────────────────────────────────────────
 function saveToHistory() {
   if (!translatedText) return;
   const src = document.getElementById('srcLang').value;
   const tgt = document.getElementById('tgtLang').value;
-  const input = document.getElementById('inputText').value.trim();
-  history.unshift({ src: LANG_NAMES[src]||src, tgt: LANG_NAMES[tgt]||tgt, tgtCode: LANG_CODES[tgt]||'hi', input: input, output: translatedText });
+  history.unshift({
+    src: LANG_NAMES[src] || src, tgt: LANG_NAMES[tgt] || tgt,
+    tgtCode: LANG_CODES[tgt] || 'hi',
+    input: document.getElementById('inputText').value.trim(),
+    output: translatedText, audio: currentAudioB64
+  });
   renderHistory();
   const btns = document.querySelectorAll('.action-btn');
   btns.forEach(function(b) {
     if (b.textContent.includes('Save')) {
-      const orig = b.innerHTML; b.innerHTML = '✓ Saved!';
-      setTimeout(function() { b.innerHTML = orig; }, 1500);
+      const o = b.innerHTML; b.innerHTML = '✓ Saved!';
+      setTimeout(function() { b.innerHTML = o; }, 1500);
     }
   });
 }
 
 function renderHistory() {
   const el = document.getElementById('historyList');
-  if (history.length === 0) {
+  if (!history.length) {
     el.innerHTML = '<div class="history-empty">No saved translations yet - hit Save after translating!</div>';
     return;
   }
   el.innerHTML = history.map(function(h, i) {
-    const inp = h.input.length > 65 ? h.input.substring(0,65)+'...' : h.input;
-    const out = h.output.length > 65 ? h.output.substring(0,65)+'...' : h.output;
+    const inp = h.input.length > 65 ? h.input.substring(0, 65) + '...' : h.input;
+    const out = h.output.length > 65 ? h.output.substring(0, 65) + '...' : h.output;
     return '<div class="history-item">' +
       '<div class="history-langs">' + h.src + ' &rarr; ' + h.tgt + '</div>' +
       '<div class="history-texts">"' + inp + '"<br>&rarr; <strong>' + out + '</strong></div>' +
       '<div class="history-actions">' +
-        '<button class="history-btn" onclick="replayHistory(' + i + ')">&#x25B6; Play</button>' +
+        (h.audio ? '<button class="history-btn" onclick="playHistoryAudio(' + i + ')">&#x25B6; Play</button>' : '') +
         '<button class="history-btn" onclick="loadHistory(' + i + ')">&#x21A9; Load</button>' +
         '<button class="history-btn" onclick="deleteHistory(' + i + ')">&#x2715; Delete</button>' +
       '</div></div>';
   }).join('');
 }
 
-function replayHistory(i) {
-  if (speechSynthesis.speaking) speechSynthesis.cancel();
-  const h = history[i];
-  const utter = new SpeechSynthesisUtterance(h.output);
-  utter.lang = h.tgtCode; utter.rate = playbackSpeed;
-  speechSynthesis.speak(utter);
+function playHistoryAudio(i) {
+  const h = history[i]; if (!h.audio) return;
+  new Audio('data:audio/mp3;base64,' + h.audio).play();
 }
 
 function loadHistory(i) {
   const h = history[i];
   document.getElementById('inputText').value = h.input;
-  translatedText = h.output; translatedLang = h.tgtCode;
+  translatedText = h.output; currentAudioB64 = h.audio || null;
   document.getElementById('outputText').textContent = h.output;
   document.getElementById('outputCard').style.display = 'block';
+  if (h.audio) { setupAudioPlayer(h.audio); document.getElementById('audioSection').style.display = 'block'; }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function deleteHistory(i) {
-  history.splice(i, 1); renderHistory();
-}
+function deleteHistory(i) { history.splice(i, 1); renderHistory(); }
 
 document.getElementById('micBtn').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRecord(); }
