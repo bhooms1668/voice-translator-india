@@ -52,6 +52,9 @@ SUPPORTED_TTS = [
 # ==========================================
 # TRANSLATE API
 # ==========================================
+@app.route("/")
+def home():
+    return render_template("index.html")
 
 @app.route("/translate", methods=["POST"])
 def translate():
