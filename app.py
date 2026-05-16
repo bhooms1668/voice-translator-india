@@ -76,7 +76,7 @@ try:
     import whisper
     import speech_recognition as sr
     print("⏳ Loading Whisper model...")
-    whisper_model = whisper.load_model("base")
+    whisper_model = whisper.load_model("tiny")
     print("✅ Whisper loaded")
     STT_AVAILABLE = True
 except Exception as e:
@@ -166,6 +166,7 @@ def speech_to_text():
         # ── MODE 1: Detect language from audio using Whisper ──────────────────
         if detect_lang:
             audio_array = whisper.load_audio(tmp_path)
+            whisper_model = whisper_model.to("cpu")
             audio_array = whisper.pad_or_trim(audio_array)
             mel = whisper.log_mel_spectrogram(audio_array).to(whisper_model.device)
             with warnings.catch_warnings():
