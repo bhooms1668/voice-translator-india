@@ -630,85 +630,154 @@ function toggleRecord() {
 }
 
 async function startRecord() {
-  isRecording = true; recSeconds = 0; audioChunks = [];
-  document.getElementById('micBtn').classList.add('recording');
-  document.getElementById('micIcon').textContent = '⏹️';
-  document.getElementById('recLabel').textContent = 'Recording... click mic to stop';
-  document.getElementById('recTimer').style.display = 'block';
-  document.getElementById('waveform').classList.add('active');
+
+  isRecording = true;
+  recSeconds = 0;
+
+  document.getElementById('micBtn')
+    .classList.add('recording');
+
+  document.getElementById('micIcon')
+    .textContent = '⏹️';
+
+  document.getElementById('recLabel')
+    .textContent = 'Recording... click mic to stop';
+
+  document.getElementById('recTimer')
+    .style.display = 'block';
+
+  document.getElementById('waveform')
+    .classList.add('active');
+
   setStatus('● Recording', 's-recording');
 
-  // Live timer — no auto-stop
-  recInterval = setInterval(function() {
+  // ==========================================
+  // TIMER
+  // ==========================================
+
+  recInterval = setInterval(function () {
+
     recSeconds++;
-    const m = Math.floor(recSeconds / 60), s = recSeconds % 60;
-    document.getElementById('recTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    const m = Math.floor(recSeconds / 60);
+    const s = recSeconds % 60;
+
+    document.getElementById('recTimer').textContent =
+      m + ':' + (s < 10 ? '0' : '') + s;
+
   }, 1000);
 
-  // Try MediaRecorder → server STT (better quality, all languages)
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
-    mediaRecorder.onstop = sendAudioForSTT;
-    mediaRecorder.start();
+  // ==========================================
+  // BROWSER SPEECH RECOGNITION
+  // ==========================================
+
+  const hasSR =
+    ('SpeechRecognition' in window) ||
+    ('webkitSpeechRecognition' in window);
+
+  if (!hasSR) {
+
+    setStatus(
+      'Speech recognition not supported',
+      's-error'
+    );
+
+    stopRecord();
     return;
-  } catch(e) {
-    console.warn('MediaRecorder failed, using Web Speech API fallback:', e);
   }
 
-  // Fallback: browser Web Speech API
-  const hasSR = ('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window);
-  if (!hasSR) { setStatus('Mic not supported — type below', 's-error'); stopRecord(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const SR =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
   recognition = new SR();
-  const code = LANG_CODES[document.getElementById('srcLang').value] || 'en';
-  recognition.lang = SR_LOCALES[code] || 'en-IN';
-  recognition.continuous = true; recognition.interimResults = true;
-  recognition.onresult = function(e) {
+
+  const code =
+    LANG_CODES[
+      document.getElementById('srcLang').value
+    ] || 'en';
+
+  recognition.lang =
+    SR_LOCALES[code] || 'en-IN';
+
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onresult = function (e) {
+
     let t = '';
-    for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+
+    for (let i = 0; i < e.results.length; i++) {
+
+      t += e.results[i][0].transcript;
+    }
+
     document.getElementById('inputText').value = t;
   };
-  recognition.onerror = function(e) { setStatus('Mic error: ' + e.error, 's-error'); stopRecord(); };
+
+  recognition.onerror = function (e) {
+
+    console.log(e);
+
+    setStatus(
+      'Mic error: ' + e.error,
+      's-error'
+    );
+
+    stopRecord();
+  };
+
+  recognition.onend = function () {
+
+    if (isRecording) {
+
+      recognition.start();
+    }
+  };
+
   recognition.start();
 }
 
 function stopRecord() {
+
   isRecording = false;
+
   clearInterval(recInterval);
-  document.getElementById('micBtn').classList.remove('recording');
-  document.getElementById('micIcon').textContent = '🎙️';
-  document.getElementById('recLabel').textContent = 'Click mic to start recording';
-  document.getElementById('recTimer').style.display = 'none';
-  document.getElementById('waveform').classList.remove('active');
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
-    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+
+  document.getElementById('micBtn')
+    .classList.remove('recording');
+
+  document.getElementById('micIcon')
+    .textContent = '🎙️';
+
+  document.getElementById('recLabel')
+    .textContent = 'Click mic to start recording';
+
+  document.getElementById('recTimer')
+    .style.display = 'none';
+
+  document.getElementById('waveform')
+    .classList.remove('active');
+
+  // ==========================================
+  // STOP BROWSER SPEECH RECOGNITION
+  // ==========================================
+
+  if (recognition) {
+
+    try {
+
+      recognition.stop();
+
+    } catch(e) {}
   }
-  if (recognition) { try { recognition.stop(); } catch(e) {} }
-  setStatus('Ready', 's-idle');
+
+  setStatus(
+    'Speech recognised ✓',
+    's-done'
+  );
 }
 
-async function sendAudioForSTT() {
-  setStatus('Recognising speech...', 's-processing');
-  const blob = new Blob(audioChunks, { type: 'audio/webm' });
-  const fd = new FormData();
-  fd.append('audio', blob, 'audio.webm');
-  fd.append('src', document.getElementById('srcLang').value);
-  try {
-    const res  = await fetch('/stt', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (data.text) {
-      document.getElementById('inputText').value = data.text;
-      setStatus('Speech recognised ✓', 's-done');
-    } else {
-      setStatus('Could not recognise — try again', 's-error');
-    }
-  } catch(e) {
-    setStatus('STT request failed', 's-error');
-  }
-}
 
 // ── Translate ─────────────────────────────────────────────────────────────────
 async function doTranslate() {
