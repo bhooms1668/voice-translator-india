@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from deep_translator import GoogleTranslator
@@ -251,6 +250,4 @@ def audio(filename):
 # ==========================================
 
 if __name__ == "__main__":
-
->>>>>>> 5bddd521728ea395c420fca1e299aaf7b4f07b6d
     app.run(debug=True)
