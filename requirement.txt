@@ -3,3 +3,10 @@ flask
 flask-cors
 deep-translator
 gtts
+SpeechRecognition
+openai-whisper
+soundfile
+torch
+torchaudio
+ffmpeg-python
+numpy
