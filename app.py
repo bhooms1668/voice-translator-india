@@ -93,7 +93,7 @@ def translate():
 
             tts.save(filename)
 
-            audio_url = f"http://127.0.0.1:5000/audio/{filename}"
+            audio_url = f"https://voice-translator-india-2.onrender.com/audio/{filename}"
 
         return jsonify({
             "translated_text": translated,
