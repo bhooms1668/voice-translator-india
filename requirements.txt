@@ -3,3 +3,4 @@ flask-cors
 deep-translator
 gtts
 gunicorn
+numpy
