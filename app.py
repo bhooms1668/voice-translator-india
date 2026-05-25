@@ -72,18 +72,6 @@ SUPPORTED_TTS = [
 # OPTIONAL: Whisper for STT + language detection
 # ==========================================
 
-try:
-    import whisper
-    import speech_recognition as sr
-    print("⏳ Loading Whisper model...")
-    whisper_model = whisper.load_model("tiny")
-    print("✅ Whisper loaded")
-    STT_AVAILABLE = True
-except Exception as e:
-    whisper_model = None
-    STT_AVAILABLE = False
-    print(f"⚠️  Whisper/STT not available: {e}")
-
 # ==========================================
 # ROUTES
 # ==========================================
@@ -143,100 +131,6 @@ def translate():
 # STT — speech-to-text OR language detection from audio
 # ==========================================
 
-@app.route("/stt", methods=["POST"])
-def speech_to_text():
-    if not STT_AVAILABLE:
-        return jsonify({"error": "STT not available — install openai-whisper and SpeechRecognition"}), 503
-
-    src_lang    = request.form.get("src", "english").lower()
-    detect_lang = request.form.get("detect_lang", "false").lower() == "true"
-    src_code    = LANG_MAP.get(src_lang, "en")
-    locale      = SR_LOCALE_MAP.get(src_code, "en-IN")
-
-    if "audio" not in request.files:
-        return jsonify({"error": "No audio file"}), 400
-
-    audio_file = request.files["audio"]
-
-    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
-        audio_file.save(tmp.name)
-        tmp_path = tmp.name
-
-    try:
-        # ── MODE 1: Detect language from audio using Whisper ──────────────────
-        if detect_lang:
-            audio_array = whisper.load_audio(tmp_path)
-            audio_array = whisper.pad_or_trim(audio_array)
-            mel = whisper.log_mel_spectrogram(audio_array).to(whisper_model.device)
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                _, probs = whisper_model.detect_language(mel)
-
-            detected_code = max(probs, key=probs.get)
-            confidence    = round(probs[detected_code] * 100, 1)
-            detected_name = WHISPER_TO_LANG.get(detected_code, detected_code)
-            print(f"✅ Detected: {detected_name} ({detected_code}) — {confidence}%")
-
-            return jsonify({
-                "detected_lang": detected_name,
-                "detected_code": detected_code,
-                "confidence":    confidence,
-            })
-
-        # ── MODE 2: Transcribe audio to text ──────────────────────────────────
-        text = None
-
-        # Try Google STT (convert webm → wav first via whisper's loader)
-        try:
-            import soundfile as sf
-            audio_array = whisper.load_audio(tmp_path)
-            wav_path = tmp_path + ".wav"
-            sf.write(wav_path, audio_array, 16000, subtype="PCM_16")
-
-            recognizer = sr.Recognizer()
-            with sr.AudioFile(wav_path) as source:
-                recognizer.adjust_for_ambient_noise(source, duration=0.3)
-                audio_data = recognizer.record(source)
-            try:
-                text = recognizer.recognize_google(audio_data, language=locale)
-                print(f"✅ Google STT: {text}")
-            except sr.UnknownValueError:
-                print("⚠️  Google STT: unclear audio")
-            except sr.RequestError as e:
-                print(f"⚠️  Google STT error: {e}")
-            try:
-                os.unlink(wav_path)
-            except Exception:
-                pass
-        except Exception as e:
-            print(f"⚠️  Google STT pipeline error: {e}")
-
-        # Whisper fallback
-        if not text and whisper_model:
-            print("🔄 Whisper transcription fallback...")
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                result = whisper_model.transcribe(
-                    tmp_path, language=src_code,
-                    task="transcribe", fp16=False, verbose=False
-                )
-            text = result.get("text", "").strip() or None
-            if text:
-                print(f"✅ Whisper: {text}")
-
-        if text:
-            return jsonify({"text": text})
-        return jsonify({"error": "Could not recognise speech — speak clearly and try again"}), 422
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-    finally:
-        try:
-            os.unlink(tmp_path)
-        except Exception:
-            pass
-
 
 # ==========================================
 # HEALTH CHECK
@@ -245,11 +139,8 @@ def speech_to_text():
 @app.route("/health")
 def health():
     return jsonify({
-        "status":  "ok",
-        "stt":     STT_AVAILABLE,
-        "whisper": whisper_model is not None,
-    })
-
+    "status": "ok"
+})
 
 # ==========================================
 # AUDIO ROUTE (kept for backward compatibility)
