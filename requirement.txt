@@ -4,3 +4,8 @@ flask-cors
 deep-translator
 gtts
 numpy
+openai-whisper
+SpeechRecognition
+soundfile
+numpy
+gunicorn

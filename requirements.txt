@@ -4,3 +4,8 @@ deep-translator
 gtts
 gunicorn
 numpy
+openai-whisper
+SpeechRecognition
+soundfile
+numpy
+gunicorn
