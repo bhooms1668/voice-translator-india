@@ -5,11 +5,6 @@ from gtts import gTTS
 import os
 import io
 import base64
-import tempfile
-import warnings
-import subprocess
-
-warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
 CORS(app)
@@ -79,58 +74,11 @@ SUPPORTED_TTS = [
     "ur", "kn", "ml", "pa", "ne", "or", "as", "sa"
 ]
 
-# ==========================================
-# WHISPER — for STT (transcription) only
-# ==========================================
-
-_whisper_mod  = None
-whisper_model = None
-STT_AVAILABLE = False
-
-try:
-    import whisper as _whisper_mod
-    import speech_recognition as _sr_mod
-    import soundfile as _sf_mod
-
-    print("⏳ Loading Whisper model (base)...")
-    whisper_model = _whisper_mod.load_model("base", device="cpu")
-    print("✅ Whisper loaded")
-    STT_AVAILABLE = True
-
-except Exception as e:
-    print(f"⚠️  Whisper/STT not available: {e}")
 
 
 # ==========================================
 # HELPER — convert browser audio to 16kHz WAV
 # ==========================================
-
-def to_wav(input_path):
-    out_path = input_path + "_conv.wav"
-
-    # Try ffmpeg first
-    try:
-        r = subprocess.run(
-            ["ffmpeg", "-y", "-i", input_path,
-             "-ar", "16000", "-ac", "1", "-sample_fmt", "s16", out_path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=30
-        )
-        if r.returncode == 0 and os.path.exists(out_path):
-            return out_path
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        pass
-
-    # Whisper loader fallback
-    try:
-        audio_array = _whisper_mod.load_audio(input_path)
-        _sf_mod.write(out_path, audio_array, 16000, subtype="PCM_16")
-        return out_path
-    except Exception as e:
-        raise RuntimeError(f"Audio conversion failed: {e}")
-
-
 # ==========================================
 # ROUTES
 # ==========================================
@@ -188,91 +136,6 @@ def translate():
 # /stt — speech-to-text (transcription only)
 # ==========================================
 
-@app.route("/stt", methods=["POST"])
-def speech_to_text():
-    if not STT_AVAILABLE:
-        return jsonify({
-            "error": "STT not available — install openai-whisper SpeechRecognition soundfile"
-        }), 503
-
-    src_lang = request.form.get("src", "english").lower()
-    src_code = LANG_MAP.get(src_lang, "en")
-    locale   = SR_LOCALE_MAP.get(src_code, "en-IN")
-
-    if "audio" not in request.files:
-        return jsonify({"error": "No audio file"}), 400
-
-    audio_file = request.files["audio"]
-
-    with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
-        audio_file.save(tmp.name)
-        raw_path = tmp.name
-
-    wav_path = None
-
-    try:
-        wav_path = to_wav(raw_path)
-
-        info     = _sf_mod.info(wav_path)
-        duration = info.duration
-        print(f"📊 Audio: {duration:.2f}s  locale: {locale}")
-
-        if duration < 1.0:
-            return jsonify({"error": "Recording too short — speak for at least 2 seconds"}), 422
-
-        text = None
-
-        # Step 1: Google STT
-        try:
-            import speech_recognition as sr
-            recognizer = sr.Recognizer()
-            with sr.AudioFile(wav_path) as source:
-                recognizer.adjust_for_ambient_noise(source, duration=0.3)
-                audio_data = recognizer.record(source)
-            try:
-                text = recognizer.recognize_google(audio_data, language=locale)
-                print(f"✅ Google STT: {text}")
-            except sr.UnknownValueError:
-                print("⚠️  Google STT: unclear audio")
-            except sr.RequestError as e:
-                print(f"⚠️  Google STT network error: {e}")
-        except Exception as e:
-            print(f"⚠️  Google STT error: {e}")
-
-        # Step 2: Whisper fallback
-        if not text:
-            print("🔄 Whisper fallback...")
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                result = whisper_model.transcribe(
-                    wav_path,
-                    language=src_code,
-                    task="transcribe",
-                    fp16=False,
-                    verbose=False,
-                    temperature=0.0,
-                    condition_on_previous_text=False,
-                )
-            text = (result.get("text") or "").strip() or None
-            if text:
-                print(f"✅ Whisper: {text}")
-
-        if text:
-            return jsonify({"text": text})
-
-        return jsonify({"error": "Could not recognise speech — speak clearly and try again"}), 422
-
-    except Exception as e:
-        print(f"❌ STT error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-    finally:
-        for p in [raw_path, wav_path]:
-            if p:
-                try: os.unlink(p)
-                except: pass
-
-
 # ==========================================
 # /health
 # ==========================================
@@ -280,9 +143,7 @@ def speech_to_text():
 @app.route("/health")
 def health():
     return jsonify({
-        "status":  "ok",
-        "stt":     STT_AVAILABLE,
-        "whisper": whisper_model is not None,
+        "status": "ok"
     })
 
 
