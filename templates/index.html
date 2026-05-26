@@ -538,16 +538,7 @@ async function startRecord() {
   }, 1000);
 
   // Try MediaRecorder (sends to server /stt)
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) audioChunks.push(e.data); };
-    mediaRecorder.onstop = sendAudioForSTT;
-    mediaRecorder.start();
-    return;
-  } catch(e) {
-    console.warn('MediaRecorder failed, using Web Speech API:', e);
-  }
+  
 
   // Fallback: Web Speech API
   const hasSR = ('SpeechRecognition' in window) || ('webkitSpeechRecognition' in window);
@@ -583,25 +574,6 @@ function stopRecord() {
   setStatus('Ready', 's-idle');
 }
 
-async function sendAudioForSTT() {
-  setStatus('Recognising speech...', 's-processing');
-  const blob = new Blob(audioChunks, { type: 'audio/webm' });
-  const fd = new FormData();
-  fd.append('audio', blob, 'audio.webm');
-  fd.append('src', document.getElementById('srcLang').value);
-  try {
-    const res  = await fetch('/stt', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (data.text) {
-      document.getElementById('inputText').value = data.text;
-      setStatus('Speech recognised ✓', 's-done');
-    } else {
-      setStatus('Could not recognise — try again', 's-error');
-    }
-  } catch(e) {
-    setStatus('STT request failed', 's-error');
-  }
-}
 
 async function doTranslate() {
   const text = document.getElementById('inputText').value.trim();
